@@ -44,7 +44,7 @@
 
 //distribui as cartas
 
-		embaralhandoCartas()
+		embaralhandoCartas();
 		for(let i=0;i<5;i++){
 			jogador.forEach(
 				j => j.cartas.push(cartasParaDistribuir.pop())  	
