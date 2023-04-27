@@ -21,7 +21,7 @@
   </thead>
   <tbody>
     <?php
-      $query = "select *from `alunos`"; 
+      $query = "select * from `alunos`"; 
       $result = mysqli_query($conection, $query);
         if(!$result){
           die("query failed".mysqli_error($e));
