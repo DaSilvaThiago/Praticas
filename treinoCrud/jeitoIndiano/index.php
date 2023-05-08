@@ -2,6 +2,15 @@
 
 <?php include("head.php")?>
 <?php include("conectionDB.php")?>
+<?php session_start()?>
+
+<a href="login/processoLogout.php" class="btn btn-dark">Sair</a>
+<?php if(isset($_SESSION['email'])){
+  echo "<h2> Olá ". $_SESSION['email']. "</h2><hr>";
+}else {
+  header('location:login/login.php?message= você precisa fazer o login') ;
+}?>
+
 <div class="box1"> 
     <h2>All Students</h2>
 <button  class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
