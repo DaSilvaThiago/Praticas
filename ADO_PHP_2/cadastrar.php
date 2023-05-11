@@ -1,7 +1,60 @@
 <?php
     try{
-        include 'abrir_transacao.php';
-        include_once 'operacoes.php';
+      include 'abrir_transacao.php';
+      include_once 'operacoes.php';
+
+      if ($_SERVER["REQUEST_METHOD"] == "GET"){
+        $alterar = isset($_GET["chave"]);
+        if($alterar){
+          $chave = $_GET["chave"];
+          $pessoa = buscar_pessoa($chave);
+          if($pessoa == null) die("Não existe!");
+        }else{
+          $chave = "";
+          $pessoa = [
+            "chave" => "",
+            "login" => "",
+            "dt_nascimento" => "",
+            "url_foto" => "",
+            "interesse_homens" => "",
+            "interesse_mulheres" => "",
+            "sexo" => ""
+          ];
+        }
+        $validacao = true;
+      }else if($_SERVER["REQUEST_METHOD"] == "POST"){
+        $alterar = isset($_POST["chave"]);
+        if($alterar){
+          $pessoa = [
+            "chave" => $_POST["chave"],
+            "login" => $_POST["login"],
+            "dt_nascimento" => $_POST["dt_nascimento"],
+            "url_foto" => $_POST["url_foto"],
+            "interesse_homens" => $_POST["interesse_homens"],
+            "interesse_mulheres" => $_POST["interesse_mulheres"],
+            "sexo" => $_POST["sexo"]
+          ];
+          $validacao = validar($pessoa);
+          if($validacao) alterar($pessoa);
+        }else{
+          $pessoa = [
+            "login" => $_POST["login"],
+            "dt_nascimento" => $_POST["dt_nascimento"],
+            "url_foto" => $_POST["url_foto"],
+            "interesse_homens" => $_POST["interesse_homens"],
+            "interesse_mulheres" => $_POST["interesse_mulheres"],
+            "sexo" => $_POST["sexo"]
+          ];
+          $validacao = validar($pessoa);
+          if($validacao) $id = inserir($pessoa);
+        }
+        if($validacao){
+          header("location: listar.php");
+          $transacao = true;
+        }
+      }else{
+        die("Método não aceito");
+      }
 ?>
 <!DOCTYPE html>
 <html lang="en">
