@@ -4,14 +4,14 @@
     $hoje = (new DateTimeImmutable("now"))->setTime(0, 0, 0, 0);
 
 
-    function inserir(){
+    function inserir($pessoa){
         global $pdo;
         $sql = "INSERT INTO pessoa
         (login, dt_nascimento, url_foto, interesse_homens, interesse_mulheres, sexo)".
         "VALUES
         (:login, :dt_nascimento, :url_foto, :interesse_homens, :interesse_mulheres, :sexo)";
-        $pdo -> prepare($sql) -> execute();
-        return $pdo -> lastInsertId();
+        $pdo->prepare($sql)->execute($pessoa);
+        return $pdo->lastInsertId();
     }
 
     function buscar_pessoa($chave){
@@ -20,50 +20,40 @@
                 FROM pessoa
                 WHERE chave = :chave";
         $resultados = [];
-        $consulta = $pdo -> prepare($sql);
-        $consulta -> execute(["chave" => $chave]);
-        return $consulta -> fetch();
+        $consulta = $pdo->prepare($sql);
+        $consulta->execute(["chave"=>$chave]);
+        return $consulta->fetch();
     }
 
-    function dataValida($data){
-        try{
-            $d = new DateTimeImmutable($data);
-            if($data !== $d -> format("Y-m-d")) return "erro";
-            if((int) $d -> format("Y") <= 0) return "erro";
-        }catch(Exception $x){
-            return "erro";
+    function listar(){
+        global $pdo;
+        $sql = "SELECT * 
+                FROM pessoa";
+        $resultados = [];
+        $consulta = $pdo->query($sql);
+        while ($linha = $consulta->fetch()){
+            $resultados[] = $linha;
         }
-        return "";
-    }
-
-    function idade($data){
-        global $hoje;
-        if(!dataValida($data)) return "erro";
-        $data_de = new DateTimeImmutable($data);
-        $intervalo = $hoje -> diff($data_de);
-        return $intervalo -> y;
-    }
-
-    function verificarData($data){
-        global $hoje;
-        if(!dataValida($data)) return "erro";
-        if(new DateTimeImmutable($data) > $hoje) return "erro";
-        if(idade($data) > 120) return "erro";
-        if(idade($data) < 18) return "erro";
-        return "";
-    }
-
-    function validar($pessoa){
-        $data = $pessoa["dt_nascimento"];
-        $validar = verificarData($data);
-        if($validar === "" && strlen($pessoa["url_foto"]) >= 10 && strlen($pessoa["url_foto"]) <= 1000){
-            return true;
-        }
-        return false;
-
     }
 
     function alterar($pessoa){
-        
+        global $pdo;
+        $sql = "UPDATE pessoa SET".
+                "login = :login,".
+                "dt_nascimento = :dt_nascimento,".
+                "url_foto = :url_foto,".
+                "interesse_homens = :interesse_homens,".
+                "interesse_mulheres = :interesse_mulheres,".
+                "sexo = :sexo,".
+                "WHERE chave = :chave";
+        $pdo->prepare($sql)->execute($pessoa);
+    }
+
+    function excluir($chave){
+        global $pdo;
+        $sql = "DELETE
+                FROM pessoa
+                WHERE chave = :chave";
+        $pdo->prepare($sql)->execute(["chave" => $chave]);
     }
 ?>
